@@ -16,7 +16,7 @@
        - run: sleep 15
   
  workflows:
- 	version: 2
+  version: 2
   my_two_jobs:
    jobs:
     - Orange
