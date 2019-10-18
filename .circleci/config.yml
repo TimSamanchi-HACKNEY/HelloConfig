@@ -1,24 +1,42 @@
- version: 2
- jobs:
-   Orange:
-     docker:
-       - image: circleci/ruby:2.4.1
-     steps:
-       - checkout
-       - run: echo "This is the 1st Hello"
-       - run: sleep 25
-   Blue:
-     docker:
-       - image: circleci/ruby:2.4.1
-     steps:
-       - checkout
-       - run: echo "This is the 2nd Hello"
-       - run: sleep 15
-  
- workflows:
+version: 2
+jobs:
+  one:
+    docker:
+      - image: circleci/ruby:2.4.1
+    steps:
+      - checkout
+      - run: echo "A first hello"
+      - run: mkdir -p my_workspace
+      - run: echo "Trying out workspaces" > my_workspace/echo-output
+      - run: sleep 10
+      - persist_to_workspace:
+          # Must be an absolute path, or relative path from working_directory
+          root: my_workspace
+          # Must be relative path from root
+          paths:
+            - echo-output      
+  two:
+    docker:
+      - image: circleci/ruby:2.4.1
+    steps:
+      - checkout
+      - run: echo "A more familiar hi"  
+      - run: sleep 5
+      - attach_workspace:
+          # Must be absolute path or relative path from working_directory
+          at: my_workspace
+
+      - run: |
+          if [[ $(cat my_workspace/echo-output) == "Trying out workspaces" ]]; then
+            echo "It worked!";
+          else
+            echo "Nope!"; exit 1
+          fi
+workflows:
   version: 2
-  my_two_jobs:
-   jobs:
-    - Orange
-    - Blue
-       
+  one_and_two:
+    jobs:
+      - one
+      - two:
+          requires:
+            - one
