@@ -1,8 +1,24 @@
  version: 2
  jobs:
-   build:
+   Orange:
      docker:
        - image: circleci/ruby:2.4.1
      steps:
        - checkout
-       - run: notacommand
+       - run: echo "This is the 1st Hello"
+       - run: sleep 25
+   Blue:
+     docker:
+       - image: circleci/ruby:2.4.1
+     steps:
+       - checkout
+       - run: echo "This is the 2nd Hello"
+       - run: sleep 15
+  
+  workfliows:
+     version: 2
+     my_two_jobs:
+      jobs:
+       - Orange
+       - Blue
+       
